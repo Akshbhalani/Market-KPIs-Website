@@ -21,7 +21,7 @@ h2{font-size:18px;margin:26px 0 2px}h3{font-size:12px;letter-spacing:.08em;text-
 .l{min-width:0}.n{font-size:14px;font-weight:600}.s{font-size:12px;color:var(--mu);margin-top:1px}
 .p{font-size:24px;font-weight:700;margin:8px 0 2px;font-variant-numeric:tabular-nums}.p2{font-size:17px;font-weight:700;margin-top:6px;font-variant-numeric:tabular-nums}
 .d{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}.up .d,.d.up{color:var(--up)}.dn .d,.d.dn{color:var(--dn)}.f{font-size:11px;color:var(--mu);margin-top:4px}
-.sp{width:100px;height:56px;flex:none}
+.r{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex:none}.mk{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:1px}.mk.on{background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.2)}.mk.off{background:#ef4444}.dt{font-size:11px;color:var(--mu);white-space:nowrap}.sp{width:100px;height:56px;flex:none}
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;justify-content:center;align-items:flex-start;overflow:auto;padding:calc(16px + env(safe-area-inset-top,0px)) 12px 16px;z-index:9}.ov.show{display:flex}
 .panel{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;width:100%;max-width:900px;position:relative}
 .x{position:absolute;top:12px;right:12px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);width:32px;height:32px;border-radius:50%;cursor:pointer}
@@ -33,7 +33,7 @@ h2{font-size:18px;margin:26px 0 2px}h3{font-size:12px;letter-spacing:.08em;text-
 #tip{position:absolute;pointer-events:none;background:var(--tx);color:var(--bg);font-size:12px;padding:6px 9px;border-radius:8px;display:none;white-space:nowrap}
 .msg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--mu);font-size:14px}
 .st{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:14px}.st div{background:var(--bg);border-radius:10px;padding:10px 12px}.st span{display:block;font-size:12px;color:var(--mu)}.st b{font-size:15px}
-@media(max-width:560px){.g{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.c{flex-direction:column;align-items:stretch;padding:12px}.sp{width:100%}.p{font-size:20px}}
+@media(max-width:560px){.g{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.c{flex-direction:column;align-items:stretch;padding:12px}.r{align-items:stretch}.sp{width:100%}.p{font-size:20px}}
 </style></head><body><div class="w">
 <header><h1>Markets Dashboard</h1><div class="live" id="ts">Loading…</div></header>
 <div class="rb" id="rb"></div>
@@ -46,8 +46,8 @@ h2{font-size:18px;margin:26px 0 2px}h3{font-size:12px;letter-spacing:.08em;text-
 <div class="cv"><canvas class="big" id="cv"></canvas><div class="msg" id="msg" style="display:none"></div><div id="tip"></div></div>
 <div class="st" id="st"></div></div></div>
 <script>
-const MURBAN_SYMBOL=''; // Yahoo has no Murban symbol. Put one here (and in quotes.js) once you have a data source.
-const OZ=31.1035;
+const OZ=31.1035,U={gold:10/OZ,silver:1000/OZ}; // INR unit: per 10 g (gold), per kg (silver)
+const fmtDay=d=>d?new Date(d+'T12:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}):'';
 // id, name, subtitle, symbol, type (m = metal shown in USD and INR), about
 const SEC=[
 ['indices','Indices',[
@@ -64,17 +64,18 @@ const SEC=[
  ['Asia',[
   ['n225','Nikkei 225','Japan','^N225','','Japan\'s main stock index, covering 225 large Tokyo-listed companies.'],
   ['hsi','Hang Seng Index','Hong Kong','^HSI','','Main index of the Hong Kong stock market.'],
+  ['sse','Shanghai Composite','China · Shanghai','000001.SS','','Tracks all stocks listed on the Shanghai Stock Exchange, China\'s main stock index.'],
+  ['szse','Shenzhen Component','China · Shenzhen','399001.SZ','','Tracks 500 large companies listed on the Shenzhen Stock Exchange, with more tech and private firms.'],
   ['sensex','BSE Sensex','India','^BSESN','','30 large companies listed on the Bombay Stock Exchange.'],
   ['nifty','Nifty 50','India','^NSEI','','50 large companies listed on the National Stock Exchange of India.']]]]],
 ['oil','Crude Oil',[
  ['Benchmarks · USD per barrel',[
   ['wti','WTI Crude Oil','US benchmark · NYMEX','CL=F','','West Texas Intermediate. Produced in the United States (Texas, New Mexico, Oklahoma, North Dakota) and priced at Cushing, Oklahoma.'],
-  ['brent','Brent Crude Oil','Global benchmark · North Sea','BZ=F','','The global benchmark. Produced in the UK and Norway (North Sea); the price basket also includes US WTI Midland. Oil from many countries is priced against Brent.'],
-  ['murban','Murban Crude Oil','Middle East benchmark · Abu Dhabi',MURBAN_SYMBOL,'','Crude from Abu Dhabi (UAE), loaded at Fujairah and traded on ICE Futures Abu Dhabi. Widely used to price oil sold to Asia.']]]]],
+  ['brent','Brent Crude Oil','Global benchmark · North Sea','BZ=F','','The global benchmark. Produced in the UK and Norway (North Sea); the price basket also includes US WTI Midland. Oil from many countries is priced against Brent.']]]]],
 ['commodities','Commodities',[
- ['Precious metals · USD and INR per troy ounce',[
-  ['gold','Gold (XAU)','COMEX futures','GC=F','m','Precious metal and safe-haven asset. Prices are COMEX futures in USD per troy ounce. INR is converted at the live USD/INR rate and excludes Indian import duty and GST, so local jeweller rates will differ.'],
-  ['silver','Silver (XAG)','COMEX futures','SI=F','m','Both a precious and an industrial metal (electronics, solar). Prices are COMEX futures in USD per troy ounce. INR is converted at the live USD/INR rate and excludes Indian import duty and GST.']]]]]];
+ ['Precious metals · USD per troy ounce · INR per 10 g (gold) and per kg (silver)',[
+  ['gold','Gold (XAU)','COMEX futures · USD per oz','GC=F','m','Precious metal and safe-haven asset. Prices are COMEX futures in USD per troy ounce. INR is shown per 10 grams, converted at the live USD/INR rate. It excludes Indian import duty and GST, so local jeweller rates will differ.'],
+  ['silver','Silver (XAG)','COMEX futures · USD per oz','SI=F','m','Both a precious and an industrial metal (electronics, solar). Prices are COMEX futures in USD per troy ounce. INR is shown per kilogram, converted at the live USD/INR rate. It excludes Indian import duty and GST.']]]]]];
 const TABS=[['all','All'],['indices','Indices'],['oil','Crude Oil'],['commodities','Commodities']];
 const R=['1D','5D','15D','1M','3M','6M','1Y','YTD','MAX'];
 const $=id=>document.getElementById(id),f=(x,d=2)=>x.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
@@ -84,19 +85,19 @@ const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim
 // quote -> display model for an item in currency c
 function model(it,c){const q=Q[it[3]];if(!it[3]||!q||q.price==null||!q.prev)return null;
  let p=q.price,pv=q.prev,sp=q.spark||[];
- if(c==='inr'){const x=Q['INR=X'];if(!x)return null;p*=x.price;pv*=x.prev;sp=sp.map(v=>v*x.price)}
+ if(c==='inr'){const x=Q['INR=X'];if(!x)return null;const k=x.price*(U[it[0]]||1),k2=x.prev*(U[it[0]]||1);p*=k;pv*=k2;sp=sp.map(v=>v*k)}
  return{p,ch:p-pv,pc:(p-pv)/pv*100,sp,up:p>=pv}}
-const sym=(it,c)=>it[4]==='m'?(c==='inr'?'₹':'$'):(it[3]==='CL=F'||it[3]==='BZ=F'||it[3]===MURBAN_SYMBOL&&it[3]?'$':'');
-const chtxt=m=>`${m.up?'▲':'▼'} ${f(Math.abs(m.ch))} (${f(Math.abs(m.pc))}%)`;
+const dot=it=>{const o=Q[it[3]]&&Q[it[3]].open;return`<span class="mk ${o?'on':'off'}" title="${o?'Market open':'Market closed'}"></span>`};
+const sym=(it,c)=>it[4]==='m'?(c==='inr'?'₹':'$'):(it[3]==='CL=F'||it[3]==='BZ=F'?'$':'');
+const chtxt=(m,d=2)=>`${m.up?'▲':'▼'} ${f(Math.abs(m.ch),d)} (${f(Math.abs(m.pc))}%)`;
 function spark(cv,v,col){if(v.length<2)return;const x=cv.getContext('2d'),d=devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;cv.width=W*d;cv.height=H*d;x.scale(d,d);
  const mn=Math.min(...v),mx=Math.max(...v),Y=a=>4+(1-(a-mn)/(mx-mn||1))*(H-8),X=i=>i/(v.length-1)*W,g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,col+'55');g.addColorStop(1,col+'00');
  x.beginPath();v.forEach((a,i)=>i?x.lineTo(X(i),Y(a)):x.moveTo(X(i),Y(a)));x.strokeStyle=col;x.lineWidth=1.8;x.lineJoin='round';x.stroke();x.lineTo(W,H);x.lineTo(0,H);x.fillStyle=g;x.fill()}
-function card(it){const m=model(it,'usd'),off=!it[3];
- if(!m)return`<button class="c off" ${off?'disabled':''} data-id="${it[0]}"><div class="l"><div class="n">${it[1]}</div><div class="s">${it[2]}</div><div class="p">—</div><div class="f">${off?'Not available on the free data source':'Waiting for data…'}</div></div></button>`;
+function card(it){const m=model(it,'usd');
+ if(!m)return`<button class="c off" disabled data-id="${it[0]}"><div class="l"><div class="n">${dot(it)}${it[1]}</div><div class="s">${it[2]}</div><div class="p">—</div><div class="f">Waiting for data…</div></div></button>`;
  let extra='';
- if(it[4]==='m'){const mi=model(it,'inr');if(mi){const u=it[0]==='gold'?[10,'10 g']:[1000,'kg'];
-  extra=`<div class="p2">₹${f(mi.p)}</div><div class="d ${mi.up?'up':'dn'}">${chtxt(mi)}</div><div class="f">≈ ₹${f(mi.p/OZ*u[0],0)} per ${u[1]} (before duty and tax)</div>`}}
- return`<button class="c ${m.up?'up':'dn'}" data-id="${it[0]}"><div class="l"><div class="n">${it[1]}</div><div class="s">${it[2]}</div><div class="p">${sym(it,'usd')}${f(m.p)}</div><div class="d">${chtxt(m)}</div>${extra}</div><canvas class="sp" data-id="${it[0]}"></canvas></button>`}
+ if(it[4]==='m'){const mi=model(it,'inr');if(mi)extra=`<div class="p2">₹${f(mi.p,0)}</div><div class="d ${mi.up?'up':'dn'}">${chtxt(mi,0)}</div><div class="f">INR per ${it[0]==='gold'?'10 g':'kg'} · before duty and tax</div>`}
+ return`<button class="c ${m.up?'up':'dn'}" data-id="${it[0]}"><div class="l"><div class="n">${dot(it)}${it[1]}</div><div class="s">${it[2]}</div><div class="p">${sym(it,'usd')}${f(m.p)}</div><div class="d">${chtxt(m)}</div>${extra}</div><div class="r"><div class="dt">${fmtDay(Q[it[3]].day)}</div><canvas class="sp" data-id="${it[0]}"></canvas></div></button>`}
 function renderCards(){$('app').innerHTML=SEC.filter(g=>tab==='all'||g[0]===tab).map(g=>(tab==='all'?`<h2>${g[1]}</h2>`:'')+g[2].map(s=>`<h3>${s[0]}</h3><div class="g">${s[1].map(card).join('')}</div>`).join('')).join('');
  document.querySelectorAll('.sp').forEach(cv=>{const it=ITEMS[cv.dataset.id],m=model(it,'usd');if(m)spark(cv,m.sp,css(m.up?'--up':'--dn'))});
  document.querySelectorAll('.c:not(.off)').forEach(b=>b.onclick=()=>openP(b.dataset.id))}
@@ -104,21 +105,25 @@ function ribbon(){$('rb').innerHTML=TABS.map(([k,l])=>`<button class="${k===tab?
  document.querySelectorAll('#rb button').forEach(b=>b.onclick=()=>{tab=b.dataset.k;ribbon();renderCards()})}
 async function load(){try{const r=await fetch('/.netlify/functions/quotes');if(!r.ok)throw 0;Q=await r.json();renderCards();if(sel)head();
  $('ts').textContent='Updated '+new Date().toLocaleTimeString();
- $('note').innerHTML='<b>Live data</b> via Yahoo Finance, refreshed every 60 seconds. Prices can be delayed up to ~15 minutes. Oil, gold, silver and Dow Futures are futures prices. Closed markets show their last close. Not financial advice.'}
+ $('note').innerHTML='<b>Live data</b> via Yahoo Finance, refreshed every 60 seconds. Prices can be delayed up to ~15 minutes. Oil, gold, silver and Dow Futures are futures prices. <span class="mk on" style="margin:0 4px 0 2px"></span>green dot = market open, <span class="mk off" style="margin:0 4px 0 2px"></span>red dot = closed (the card then shows the last trading day).  Not financial advice.'}
  catch(e){$('note').innerHTML='<b>Could not load prices.</b> Check that the Netlify functions are deployed. Retrying…'}}
 // ---- detail panel ----
 function openP(id){sel=id;rng='1D';cur='usd';$('ov').classList.add('show');$('ct').textContent=ITEMS[id][1];$('cs').textContent=ITEMS[id][2];$('ab').textContent=ITEMS[id][5];head();pick()}
 function closeP(){sel=null;$('ov').classList.remove('show')}
 $('x').onclick=closeP;$('ov').onclick=e=>{if(e.target.id==='ov')closeP()};addEventListener('keydown',e=>{if(e.key==='Escape')closeP()});
-function head(){const it=ITEMS[sel],m=model(it,cur);if(m)$('cc').innerHTML=`<div style="font-size:26px;font-weight:700">${sym(it,cur)}${f(m.p)}</div><div class="${m.up?'up':'dn'}" style="font-weight:600;font-size:13px">${chtxt(m)} · today</div>`;
- $('rg').innerHTML=(ITEMS[sel][4]==='m'?['usd','inr'].map(c=>`<button class="${c===cur?'on':''}" data-c="${c}">${c.toUpperCase()}</button>`).join('')+'<span style="width:8px"></span>':'')+R.map(r=>`<button class="${r===rng?'on':''}" data-r="${r}">${r==='MAX'?'Max':r}</button>`).join('');
+function head(){const it=ITEMS[sel],d=HC[it[3]+rng+cur],m=model(it,cur),sy=sym(it,cur),dg=cur==='inr'?0:2;let h='';
+ let b=m?m.p:(d?d.p[d.p.length-1]:null),ch=null,pc=null;
+ if(rng==='1D'&&m){ch=m.ch;pc=m.pc}else if(d&&b!=null){const a=d.p[0];ch=b-a;pc=ch/a*100}
+ if(b!=null){const up=ch==null||ch>=0,col=css(up?'--up':'--dn');h=`<div style="font-size:26px;font-weight:700">${sy}${f(b,dg)}</div>`+(ch==null?'':`<div style="font-weight:600;font-size:13px;color:${col}">${up?'▲':'▼'} ${f(Math.abs(ch),dg)} (${f(Math.abs(pc))}%) · ${rng}${rng==='1D'?' · '+fmtDay(Q[it[3]]&&Q[it[3]].day):''}</div>`)}
+ $('ct').innerHTML=dot(it)+it[1];$('cc').innerHTML=h;$('cs').textContent=it[2]+(cur==='inr'?' · INR per '+(it[0]==='gold'?'10 g':'kg')+', before duty and tax':'');
+ $('rg').innerHTML=(it[4]==='m'?['usd','inr'].map(c=>`<button class="${c===cur?'on':''}" data-c="${c}">${c.toUpperCase()}</button>`).join('')+'<span style="width:8px"></span>':'')+R.map(r=>`<button class="${r===rng?'on':''}" data-r="${r}">${r==='MAX'?'Max':r}</button>`).join('');
  document.querySelectorAll('#rg [data-r]').forEach(b=>b.onclick=()=>{rng=b.dataset.r;head();pick()});
  document.querySelectorAll('#rg [data-c]').forEach(b=>b.onclick=()=>{cur=b.dataset.c;head();pick()})}
 async function pick(){const it=ITEMS[sel],key=it[3]+rng+cur,msg=$('msg');
  if(!HC[key]){msg.style.display='flex';msg.textContent='Loading chart…';draw();
-  try{const r=await fetch(`/.netlify/functions/history?s=${encodeURIComponent(it[3])}&r=${rng}&fx=${cur==='inr'?1:0}`);if(!r.ok)throw 0;const d=await r.json();if(!d.p||d.p.length<2)throw 0;HC[key]=d}
+  try{const r=await fetch(`/.netlify/functions/history?s=${encodeURIComponent(it[3])}&r=${rng}&fx=${cur==='inr'?1:0}`);if(!r.ok)throw 0;const d=await r.json();if(!d.p||d.p.length<2)throw 0;if(cur==='inr'&&it[4]==='m')d.p=d.p.map(v=>v*U[it[0]]);HC[key]=d}
   catch(e){if(key===ITEMS[sel][3]+rng+cur){msg.textContent='Chart data is not available right now.';$('st').innerHTML=''}return}}
- if(key!==ITEMS[sel]?.[3]+rng+cur)return;msg.style.display='none';draw();stats()}
+ if(key!==ITEMS[sel]?.[3]+rng+cur)return;msg.style.display='none';draw();stats();head()}
 function stats(){const d=HC[ITEMS[sel][3]+rng+cur];if(!d)return;const p=d.p,rt=p.slice(1).map((x,i)=>Math.log(x/p[i])),m=rt.reduce((a,b)=>a+b,0)/rt.length,sd=Math.sqrt(rt.reduce((a,b)=>a+(b-m)**2,0)/rt.length)*100,s=sym(ITEMS[sel],cur);
  $('st').innerHTML=[['Open',p[0]],['High',Math.max(...p)],['Low',Math.min(...p)],['Range',Math.max(...p)-Math.min(...p)]].map(([l,v])=>`<div><span>${l}</span><b>${s}${f(v)}</b></div>`).join('')+`<div><span>Volatility (σ per point)</span><b>${f(sd)}%</b></div>`}
 function draw(){if(!sel)return;const it=ITEMS[sel],d=HC[it[3]+rng+cur],cv=$('cv'),x=cv.getContext('2d'),dp=devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;cv.width=W*dp;cv.height=H*dp;x.scale(dp,dp);$('tip').style.display='none';if(!d)return;
