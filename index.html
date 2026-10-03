@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Markets Dashboard</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f5f6f8;--card:#fff;--tx:#12151c;--mu:#6b7280;--bd:#e5e7eb;--up:#0f9d58;--dn:#e5484d}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b0d12;--card:#141821;--tx:#eef1f6;--mu:#8b94a5;--bd:#232937;--up:#34d399;--dn:#f87171}}
+:root[data-theme="dark"]{--bg:#0b0d12;--card:#141821;--tx:#eef1f6;--mu:#8b94a5;--bd:#232937;--up:#34d399;--dn:#f87171}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+.w{max-width:1100px;margin:0 auto;padding:20px 16px 40px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:22px;margin:0}
+.live{font-size:12px;color:var(--mu)}
+.note{background:var(--card);border:1px solid var(--bd);border-left:3px solid #f59e0b;border-radius:10px;padding:10px 14px;font-size:13px;color:var(--mu);margin-bottom:8px;line-height:1.45}
+h2{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--mu);margin:22px 0 10px}
+.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.c{background:var(--card);border:2px solid var(--bd);border-radius:14px;padding:14px 16px}
+.c.up{border-color:#86efac}.c.dn{border-color:#fca5a5}
+.n{font-size:14px;font-weight:600}.s{font-size:12px;color:var(--mu);margin-top:1px}
+.p{font-size:26px;font-weight:700;margin:10px 0 2px;font-variant-numeric:tabular-nums}
+.d{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
+.d.up{color:var(--up)}.d.dn{color:var(--dn)}
+.f{font-size:11px;color:var(--mu);margin-top:6px}
+@media(max-width:560px){.g{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.p{font-size:20px}.c{padding:12px}}
+</style></head><body><div class="w">
+<header><h1>Markets Dashboard</h1><div class="live" id="ts">Loading…</div></header>
+<div class="note" id="note"><b>Loading live prices…</b></div>
+<div id="app"></div>
+</div>
+<script>
+// [group, [[name, subtitle, yahoo symbol, currency prefix]]]
+const G=[
+['Commodities',[['WTI Crude Oil','USD / barrel','CL=F','$'],['Brent Crude Oil','USD / barrel','BZ=F','$'],['Gold','USD / troy oz','GC=F','$'],['Silver','USD / troy oz','SI=F','$']]],
+['United States',[['S&P 500','Index points','^GSPC',''],['Nasdaq Composite','Index points','^IXIC',''],['Dow Jones','Index points','^DJI','']]],
+['Europe',[['DAX','Germany','^GDAXI',''],['FTSE 100','United Kingdom','^FTSE',''],['Euro Stoxx 50','Eurozone','^STOXX50E','']]],
+['Asia',[['Nikkei 225','Japan','^N225',''],['Hang Seng','Hong Kong','^HSI',''],['BSE Sensex','India','^BSESN',''],['Nifty 50','India','^NSEI','']]]];
+const f=x=>x.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const app=document.getElementById('app');
+app.innerHTML=G.map(([t,it])=>`<h2>${t}</h2><div class="g">`+it.map(([n,s,y])=>`<div class="c" data-y="${y}"><div class="n">${n}</div><div class="s">${s}</div><div class="p">—</div><div class="d">&nbsp;</div></div>`).join('')+'</div>').join('');
+const CU={};G.forEach(g=>g[1].forEach(i=>CU[i[2]]=i[3]));
+async function load(){
+ try{
+  const r=await fetch('/.netlify/functions/quotes');if(!r.ok)throw 0;const q=await r.json();let latest=0;
+  document.querySelectorAll('.c').forEach(c=>{const d=q[c.dataset.y];if(!d||d.price==null)return;
+   const ch=d.price-d.prev,pc=ch/d.prev*100,up=ch>=0;latest=Math.max(latest,d.time||0);
+   c.className='c '+(up?'up':'dn');c.querySelector('.p').textContent=CU[c.dataset.y]+f(d.price);
+   const e=c.querySelector('.d');e.className='d '+(up?'up':'dn');e.textContent=`${up?'▲':'▼'} ${f(Math.abs(ch))} (${f(Math.abs(pc))}%)`});
+  document.getElementById('ts').textContent='Updated '+new Date().toLocaleTimeString();
+  document.getElementById('note').innerHTML='<b>Live data</b> via Yahoo Finance, refreshed every 60 seconds. Prices may be delayed up to ~15 minutes and are not financial advice. Closed markets show their last close.';
+ }catch(e){document.getElementById('note').innerHTML='<b>Could not load prices.</b> Check that the quotes function is deployed. Retrying…'}}
+load();setInterval(load,60000);
+</script></body></html>
