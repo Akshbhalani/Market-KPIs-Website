@@ -12,7 +12,7 @@ exports.handler=async(e)=>{
   try{
     let d=await get(q.s,r);
     if(r==="1D"&&d.t.length){ // last trading session only (works when the market is closed)
-      const key=(ms)=>new Date(ms+d.off*1000).toISOString().slice(0,10),L=d.t.length-1,fut=q.s.endsWith("=F"),day=key(d.t[L]),cut=d.t[L]-864e5;
+      const key=(ms)=>new Date(ms+d.off*1000).toISOString().slice(0,10),L=d.t.length-1,fut=/=[FX]$/.test(q.s),day=key(d.t[L]),cut=d.t[L]-864e5;
       const ix=d.t.map((x,i)=>i).filter(i=>fut?d.t[i]>=cut:key(d.t[i])===day);
       d.t=ix.map(i=>d.t[i]);d.p=ix.map(i=>d.p[i]);
     }

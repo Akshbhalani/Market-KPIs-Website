@@ -1,5 +1,5 @@
 // Live quotes for the cards: price, previous close, trading day and the last trading session's points for the mini chart.
-const SYMS=["^GSPC","^IXIC","^DJI","YM=F","^GDAXI","^FTSE","^STOXX50E","^STOXX","^N225","^HSI","000001.SS","399001.SZ","^BSESN","^NSEI","CL=F","BZ=F","GC=F","SI=F","INR=X"];
+const SYMS=["^GSPC","^IXIC","^DJI","YM=F","^GDAXI","^FTSE","^STOXX50E","^STOXX","^N225","^HSI","000001.SS","399001.SZ","^BSESN","^NSEI","CL=F","BZ=F","GC=F","SI=F","INR=X","EURUSD=X","GBPUSD=X","JPY=X","CHF=X","AUDUSD=X","CAD=X","CNY=X","AED=X","EURINR=X","GBPINR=X"];
 const key=(ms,off)=>new Date(ms+off*1000).toISOString().slice(0,10); // exchange-local date
 async function chart(s,range,interval){
   const r=await fetch("https://query1.finance.yahoo.com/v8/finance/chart/"+encodeURIComponent(s)+"?interval="+interval+"&range="+range,{headers:{"User-Agent":"Mozilla/5.0"}});
@@ -7,7 +7,7 @@ async function chart(s,range,interval){
 }
 async function one(s){
   try{
-    const fut=s.endsWith("=F"),res=await chart(s,"5d","15m"),m=res.meta,off=m.gmtoffset||0,c=res.indicators.quote[0].close,t=[],p=[];
+    const fut=/=[FX]$/.test(s),res=await chart(s,"5d","15m"),m=res.meta,off=m.gmtoffset||0,c=res.indicators.quote[0].close,t=[],p=[];
     (res.timestamp||[]).forEach((x,i)=>{if(c[i]!=null){t.push(x*1000);p.push(c[i])}});
     const L=t.length-1,idx=[];
     if(fut){const cut=t[L]-864e5;t.forEach((x,i)=>{if(x>=cut)idx.push(i)})}      // futures: last 24h

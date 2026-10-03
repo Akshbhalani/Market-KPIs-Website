@@ -21,7 +21,7 @@ h2{font-size:18px;margin:26px 0 2px}h3{font-size:12px;letter-spacing:.08em;text-
 .l{min-width:0}.n{font-size:14px;font-weight:600}.s{font-size:12px;color:var(--mu);margin-top:1px}
 .p{font-size:24px;font-weight:700;margin:8px 0 2px;font-variant-numeric:tabular-nums}.p2{font-size:17px;font-weight:700;margin-top:6px;font-variant-numeric:tabular-nums}
 .d{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}.up .d,.d.up{color:var(--up)}.dn .d,.d.dn{color:var(--dn)}.f{font-size:11px;color:var(--mu);margin-top:4px}
-.r{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex:none}.mk{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:1px}.mk.on{background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.2)}.mk.off{background:#ef4444}.dt{font-size:11px;color:var(--mu);white-space:nowrap}.sp{width:100px;height:56px;flex:none}
+.r{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex:none}.cvt{background:var(--card);border:2px solid var(--bd);border-radius:14px;padding:16px;margin-top:6px}.cr{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.cr input,.cr select{font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;min-width:0}.cr input{width:150px;flex:1 1 130px}.cr select{flex:1 1 150px}.cr button{border:1px solid var(--bd);background:var(--bg);color:var(--tx);border-radius:10px;width:42px;height:42px;font-size:18px;cursor:pointer}.res{font-size:30px;font-weight:700;margin:14px 0 2px;font-variant-numeric:tabular-nums}.ga{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.ga div{background:var(--bg);border-radius:10px;padding:8px 12px;font-size:13px;color:var(--mu)}.ga b{display:block;font-size:15px;color:var(--tx);font-variant-numeric:tabular-nums}.mk{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:1px}.mk.on{background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.2)}.mk.off{background:#ef4444}.dt{font-size:11px;color:var(--mu);white-space:nowrap}.sp{width:100px;height:56px;flex:none}
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;justify-content:center;align-items:flex-start;overflow:auto;padding:calc(16px + env(safe-area-inset-top,0px)) 12px 16px;z-index:9}.ov.show{display:flex}
 .panel{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;width:100%;max-width:900px;position:relative}
 .x{position:absolute;top:12px;right:12px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);width:32px;height:32px;border-radius:50%;cursor:pointer}
@@ -38,6 +38,9 @@ h2{font-size:18px;margin:26px 0 2px}h3{font-size:12px;letter-spacing:.08em;text-
 <header><h1>Markets Dashboard</h1><div class="live" id="ts">Loading…</div></header>
 <div class="rb" id="rb"></div>
 <div class="note" id="note"><b>Loading live prices…</b></div>
+<div class="cvt" id="conv" style="display:none"><h3 style="margin-top:0">Currency converter · live rates</h3>
+<div class="cr"><input id="amt" type="number" value="100" min="0" step="any" inputmode="decimal" aria-label="Amount"><select id="fr" aria-label="From"></select><button id="sw" title="Swap" aria-label="Swap">⇄</button><select id="to" aria-label="To"></select></div>
+<div class="res" id="res">—</div><div class="f" id="rt"></div><h3>Same amount in other currencies</h3><div class="ga" id="all"></div></div>
 <div id="app"></div>
 </div>
 <div class="ov" id="ov"><div class="panel"><button class="x" id="x" aria-label="Close">✕</button>
@@ -75,8 +78,22 @@ const SEC=[
 ['commodities','Commodities',[
  ['Precious metals · USD per troy ounce · INR per 10 g (gold) and per kg (silver)',[
   ['gold','Gold (XAU)','COMEX futures · USD per oz','GC=F','m','Precious metal and safe-haven asset. Prices are COMEX futures in USD per troy ounce. INR is shown per 10 grams, converted at the live USD/INR rate. It excludes Indian import duty and GST, so local jeweller rates will differ.'],
-  ['silver','Silver (XAG)','COMEX futures · USD per oz','SI=F','m','Both a precious and an industrial metal (electronics, solar). Prices are COMEX futures in USD per troy ounce. INR is shown per kilogram, converted at the live USD/INR rate. It excludes Indian import duty and GST.']]]]]];
-const TABS=[['all','All'],['indices','Indices'],['oil','Crude Oil'],['commodities','Commodities']];
+  ['silver','Silver (XAG)','COMEX futures · USD per oz','SI=F','m','Both a precious and an industrial metal (electronics, solar). Prices are COMEX futures in USD per troy ounce. INR is shown per kilogram, converted at the live USD/INR rate. It excludes Indian import duty and GST.']]]]],
+['fx','Currencies',[
+ ['Major pairs',[
+  ['eurusd','EUR / USD','Euro to US Dollar','EURUSD=X','fx','The most traded currency pair in the world. The price is how many US dollars one euro buys.'],
+  ['gbpusd','GBP / USD','British Pound to US Dollar','GBPUSD=X','fx','Known as Cable. The price is how many US dollars one pound sterling buys.'],
+  ['usdjpy','USD / JPY','US Dollar to Japanese Yen','JPY=X','fx','How many Japanese yen one US dollar buys.'],
+  ['usdchf','USD / CHF','US Dollar to Swiss Franc','CHF=X','fx','How many Swiss francs one US dollar buys. The franc is often treated as a safe-haven currency.'],
+  ['audusd','AUD / USD','Australian Dollar to US Dollar','AUDUSD=X','fx','How many US dollars one Australian dollar buys. Often moves with commodity prices.'],
+  ['usdcad','USD / CAD','US Dollar to Canadian Dollar','CAD=X','fx','How many Canadian dollars one US dollar buys. Often moves with oil prices.'],
+  ['usdcny','USD / CNY','US Dollar to Chinese Yuan','CNY=X','fx','How many Chinese yuan one US dollar buys.'],
+  ['usdaed','USD / AED','US Dollar to UAE Dirham','AED=X','fx','How many UAE dirhams one US dollar buys. The dirham is pegged to the dollar, so this barely moves.']]],
+ ['Indian rupee pairs',[
+  ['usdinr','USD / INR','US Dollar to Indian Rupee','INR=X','fx','How many Indian rupees one US dollar buys.'],
+  ['eurinr','EUR / INR','Euro to Indian Rupee','EURINR=X','fx','How many Indian rupees one euro buys.'],
+  ['gbpinr','GBP / INR','British Pound to Indian Rupee','GBPINR=X','fx','How many Indian rupees one pound sterling buys.']]]]]];
+const TABS=[['all','All'],['indices','Indices'],['oil','Crude Oil'],['commodities','Commodities'],['fx','Currencies']];
 const R=['1D','5D','15D','1M','3M','6M','1Y','YTD','MAX'];
 const $=id=>document.getElementById(id),f=(x,d=2)=>x.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
 const ITEMS={};SEC.forEach(g=>g[2].forEach(s=>s[1].forEach(i=>ITEMS[i[0]]=i)));
@@ -88,6 +105,7 @@ function model(it,c){const q=Q[it[3]];if(!it[3]||!q||q.price==null||!q.prev)retu
  if(c==='inr'){const x=Q['INR=X'];if(!x)return null;const k=x.price*(U[it[0]]||1),k2=x.prev*(U[it[0]]||1);p*=k;pv*=k2;sp=sp.map(v=>v*k)}
  return{p,ch:p-pv,pc:(p-pv)/pv*100,sp,up:p>=pv}}
 const dot=it=>{const o=Q[it[3]]&&Q[it[3]].open;return`<span class="mk ${o?'on':'off'}" title="${o?'Market open':'Market closed'}"></span>`};
+const dgt=(it,v)=>it[4]==='fx'?(Math.abs(v)<10?4:2):2;
 const sym=(it,c)=>it[4]==='m'?(c==='inr'?'₹':'$'):(it[3]==='CL=F'||it[3]==='BZ=F'?'$':'');
 const chtxt=(m,d=2)=>`${m.up?'▲':'▼'} ${f(Math.abs(m.ch),d)} (${f(Math.abs(m.pc))}%)`;
 function spark(cv,v,col){if(v.length<2)return;const x=cv.getContext('2d'),d=devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;cv.width=W*d;cv.height=H*d;x.scale(d,d);
@@ -97,13 +115,24 @@ function card(it){const m=model(it,'usd');
  if(!m)return`<button class="c off" disabled data-id="${it[0]}"><div class="l"><div class="n">${dot(it)}${it[1]}</div><div class="s">${it[2]}</div><div class="p">—</div><div class="f">Waiting for data…</div></div></button>`;
  let extra='';
  if(it[4]==='m'){const mi=model(it,'inr');if(mi)extra=`<div class="p2">₹${f(mi.p,0)}</div><div class="d ${mi.up?'up':'dn'}">${chtxt(mi,0)}</div><div class="f">INR per ${it[0]==='gold'?'10 g':'kg'} · before duty and tax</div>`}
- return`<button class="c ${m.up?'up':'dn'}" data-id="${it[0]}"><div class="l"><div class="n">${dot(it)}${it[1]}</div><div class="s">${it[2]}</div><div class="p">${sym(it,'usd')}${f(m.p)}</div><div class="d">${chtxt(m)}</div>${extra}</div><div class="r"><div class="dt">${fmtDay(Q[it[3]].day)}</div><canvas class="sp" data-id="${it[0]}"></canvas></div></button>`}
+ return`<button class="c ${m.up?'up':'dn'}" data-id="${it[0]}"><div class="l"><div class="n">${dot(it)}${it[1]}</div><div class="s">${it[2]}</div><div class="p">${sym(it,'usd')}${f(m.p,dgt(it,m.p))}</div><div class="d">${chtxt(m,dgt(it,m.p))}</div>${extra}</div><div class="r"><div class="dt">${fmtDay(Q[it[3]].day)}</div><canvas class="sp" data-id="${it[0]}"></canvas></div></button>`}
 function renderCards(){$('app').innerHTML=SEC.filter(g=>tab==='all'||g[0]===tab).map(g=>(tab==='all'?`<h2>${g[1]}</h2>`:'')+g[2].map(s=>`<h3>${s[0]}</h3><div class="g">${s[1].map(card).join('')}</div>`).join('')).join('');
  document.querySelectorAll('.sp').forEach(cv=>{const it=ITEMS[cv.dataset.id],m=model(it,'usd');if(m)spark(cv,m.sp,css(m.up?'--up':'--dn'))});
  document.querySelectorAll('.c:not(.off)').forEach(b=>b.onclick=()=>openP(b.dataset.id))}
+// ---- currency converter (rates cross through USD) ----
+const CUR=[['USD','US Dollar',null],['EUR','Euro',['EURUSD=X',0]],['GBP','British Pound',['GBPUSD=X',0]],['JPY','Japanese Yen',['JPY=X',1]],['INR','Indian Rupee',['INR=X',1]],['CNY','Chinese Yuan',['CNY=X',1]],['AUD','Australian Dollar',['AUDUSD=X',0]],['CAD','Canadian Dollar',['CAD=X',1]],['CHF','Swiss Franc',['CHF=X',1]],['AED','UAE Dirham',['AED=X',1]]];
+function usd(c){if(c==='USD')return 1;const d=CUR.find(x=>x[0]===c)[2],q=Q[d[0]];if(!q||!q.price)return null;return d[1]?1/q.price:q.price}
+const cf=v=>f(v,v<1?4:2);
+function conv(){const a=parseFloat($('amt').value)||0,F=$('fr').value,T=$('to').value,uf=usd(F),ut=usd(T);
+ if(uf==null||ut==null){$('res').textContent='Waiting for rates…';$('rt').textContent='';$('all').innerHTML='';return}
+ $('res').textContent=`${cf(a*uf/ut)} ${T}`;$('rt').textContent=`1 ${F} = ${f(uf/ut,4)} ${T} · live rate via Yahoo Finance, may be delayed ~15 min`;
+ $('all').innerHTML=CUR.filter(c=>c[0]!==F).map(c=>`<div>${c[0]} · ${c[1]}<b>${cf(a*uf/usd(c[0]))}</b></div>`).join('')}
+function initConv(){const o=CUR.map(c=>`<option value="${c[0]}">${c[0]} · ${c[1]}</option>`).join('');$('fr').innerHTML=o;$('to').innerHTML=o;$('fr').value='USD';$('to').value='INR';
+ ['amt','fr','to'].forEach(i=>$(i).oninput=conv);$('sw').onclick=()=>{const t=$('fr').value;$('fr').value=$('to').value;$('to').value=t;conv()}}
+function syncConv(){$('conv').style.display=tab==='fx'?'block':'none'}
 function ribbon(){$('rb').innerHTML=TABS.map(([k,l])=>`<button class="${k===tab?'on':''}" data-k="${k}">${l}</button>`).join('');
- document.querySelectorAll('#rb button').forEach(b=>b.onclick=()=>{tab=b.dataset.k;ribbon();renderCards()})}
-async function load(){try{const r=await fetch('/.netlify/functions/quotes');if(!r.ok)throw 0;Q=await r.json();renderCards();if(sel)head();
+ document.querySelectorAll('#rb button').forEach(b=>b.onclick=()=>{tab=b.dataset.k;ribbon();renderCards();syncConv()})}
+async function load(){try{const r=await fetch('/.netlify/functions/quotes');if(!r.ok)throw 0;Q=await r.json();renderCards();conv();if(sel)head();
  $('ts').textContent='Updated '+new Date().toLocaleTimeString();
  $('note').innerHTML='<b>Live data</b> via Yahoo Finance, refreshed every 60 seconds. Prices can be delayed up to ~15 minutes. Oil, gold, silver and Dow Futures are futures prices. <span class="mk on" style="margin:0 4px 0 2px"></span>green dot = market open, <span class="mk off" style="margin:0 4px 0 2px"></span>red dot = closed (the card then shows the last trading day).  Not financial advice.'}
  catch(e){$('note').innerHTML='<b>Could not load prices.</b> Check that the Netlify functions are deployed. Retrying…'}}
@@ -111,7 +140,7 @@ async function load(){try{const r=await fetch('/.netlify/functions/quotes');if(!
 function openP(id){sel=id;rng='1D';cur='usd';$('ov').classList.add('show');$('ct').textContent=ITEMS[id][1];$('cs').textContent=ITEMS[id][2];$('ab').textContent=ITEMS[id][5];head();pick()}
 function closeP(){sel=null;$('ov').classList.remove('show')}
 $('x').onclick=closeP;$('ov').onclick=e=>{if(e.target.id==='ov')closeP()};addEventListener('keydown',e=>{if(e.key==='Escape')closeP()});
-function head(){const it=ITEMS[sel],d=HC[it[3]+rng+cur],m=model(it,cur),sy=sym(it,cur),dg=cur==='inr'?0:2;let h='';
+function head(){const it=ITEMS[sel],d=HC[it[3]+rng+cur],m=model(it,cur),sy=sym(it,cur),dg=cur==='inr'?0:dgt(it,m?m.p:(d?d.p[d.p.length-1]:1));let h='';
  let b=m?m.p:(d?d.p[d.p.length-1]:null),ch=null,pc=null;
  if(rng==='1D'&&m){ch=m.ch;pc=m.pc}else if(d&&b!=null){const a=d.p[0];ch=b-a;pc=ch/a*100}
  if(b!=null){const up=ch==null||ch>=0,col=css(up?'--up':'--dn');h=`<div style="font-size:26px;font-weight:700">${sy}${f(b,dg)}</div>`+(ch==null?'':`<div style="font-weight:600;font-size:13px;color:${col}">${up?'▲':'▼'} ${f(Math.abs(ch),dg)} (${f(Math.abs(pc))}%) · ${rng}${rng==='1D'?' · '+fmtDay(Q[it[3]]&&Q[it[3]].day):''}</div>`)}
@@ -125,16 +154,16 @@ async function pick(){const it=ITEMS[sel],key=it[3]+rng+cur,msg=$('msg');
   catch(e){if(key===ITEMS[sel][3]+rng+cur){msg.textContent='Chart data is not available right now.';$('st').innerHTML=''}return}}
  if(key!==ITEMS[sel]?.[3]+rng+cur)return;msg.style.display='none';draw();stats();head()}
 function stats(){const d=HC[ITEMS[sel][3]+rng+cur];if(!d)return;const p=d.p,rt=p.slice(1).map((x,i)=>Math.log(x/p[i])),m=rt.reduce((a,b)=>a+b,0)/rt.length,sd=Math.sqrt(rt.reduce((a,b)=>a+(b-m)**2,0)/rt.length)*100,s=sym(ITEMS[sel],cur);
- $('st').innerHTML=[['Open',p[0]],['High',Math.max(...p)],['Low',Math.min(...p)],['Range',Math.max(...p)-Math.min(...p)]].map(([l,v])=>`<div><span>${l}</span><b>${s}${f(v)}</b></div>`).join('')+`<div><span>Volatility (σ per point)</span><b>${f(sd)}%</b></div>`}
+ $('st').innerHTML=[['Open',p[0]],['High',Math.max(...p)],['Low',Math.min(...p)],['Range',Math.max(...p)-Math.min(...p)]].map(([l,v])=>`<div><span>${l}</span><b>${s}${f(v,dgt(ITEMS[sel],v))}</b></div>`).join('')+`<div><span>Volatility (σ per point)</span><b>${f(sd)}%</b></div>`}
 function draw(){if(!sel)return;const it=ITEMS[sel],d=HC[it[3]+rng+cur],cv=$('cv'),x=cv.getContext('2d'),dp=devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;cv.width=W*dp;cv.height=H*dp;x.scale(dp,dp);$('tip').style.display='none';if(!d)return;
  const up=d.p[d.p.length-1]>=d.p[0],col=css(up?'--up':'--dn'),mu=css('--mu'),gr=css('--bd'),P=d.p,mn=Math.min(...P),mx=Math.max(...P),pd=(mx-mn)*.08||1,lo=mn-pd,hi=mx+pd,L=8,Rr=66,T=10,B=24,w=W-L-Rr,h=H-T-B,n=P.length,X=i=>L+i/(n-1)*w,Y=v=>T+(1-(v-lo)/(hi-lo))*h;
  x.font='11px system-ui';x.lineWidth=1;
- for(let i=0;i<5;i++){const v=lo+(hi-lo)*i/4,y=Y(v);x.strokeStyle=gr;x.beginPath();x.moveTo(L,y);x.lineTo(L+w,y);x.stroke();x.fillStyle=mu;x.textAlign='left';x.fillText(f(v,v>1000?0:2),L+w+6,y+4)}
+ for(let i=0;i<5;i++){const v=lo+(hi-lo)*i/4,y=Y(v);x.strokeStyle=gr;x.beginPath();x.moveTo(L,y);x.lineTo(L+w,y);x.stroke();x.fillStyle=mu;x.textAlign='left';x.fillText(f(v,v>1000?0:dgt(it,v)),L+w+6,y+4)}
  x.textAlign='center';for(let i=0;i<5;i++){const j=Math.round(i*(n-1)/4),t=new Date(d.t[j]);x.fillStyle=mu;x.fillText(rng==='1D'||rng==='5D'?t.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):(rng==='MAX'||rng==='1Y'?t.toLocaleDateString([],{month:'short',year:'2-digit'}):t.toLocaleDateString([],{month:'short',day:'numeric'})),Math.min(Math.max(X(j),24),L+w-10),H-6)}
  const g=x.createLinearGradient(0,T,0,T+h);g.addColorStop(0,col+'55');g.addColorStop(1,col+'00');x.beginPath();P.forEach((v,i)=>i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v)));x.strokeStyle=col;x.lineWidth=2;x.lineJoin='round';x.stroke();x.lineTo(X(n-1),T+h);x.lineTo(L,T+h);x.fillStyle=g;x.fill();
  if(hov!=null){const i=Math.max(0,Math.min(n-1,Math.round((hov-L)/w*(n-1)))),t=new Date(d.t[i]),tp=$('tip');x.strokeStyle=mu;x.beginPath();x.moveTo(X(i),T);x.lineTo(X(i),T+h);x.stroke();x.fillStyle=col;x.beginPath();x.arc(X(i),Y(P[i]),4,0,7);x.fill();
-  tp.style.display='block';tp.innerHTML=`<b>${sym(it,cur)}${f(P[i])}</b><br>${t.toLocaleString([],{dateStyle:'medium',timeStyle:(rng==='1D'||rng==='5D'||rng==='15D')?'short':undefined})}`;tp.style.left=Math.min(X(i)+10,W-140)+'px';tp.style.top=Math.max(Y(P[i])-50,0)+'px'}}
+  tp.style.display='block';tp.innerHTML=`<b>${sym(it,cur)}${f(P[i],dgt(it,P[i]))}</b><br>${t.toLocaleString([],{dateStyle:'medium',timeStyle:(rng==='1D'||rng==='5D'||rng==='15D')?'short':undefined})}`;tp.style.left=Math.min(X(i)+10,W-140)+'px';tp.style.top=Math.max(Y(P[i])-50,0)+'px'}}
 const cv=$('cv');cv.onmousemove=e=>{hov=e.offsetX;draw()};cv.onmouseleave=()=>{hov=null;draw()};cv.ontouchmove=e=>{hov=e.touches[0].clientX-cv.getBoundingClientRect().left;draw()};cv.ontouchend=()=>{hov=null;draw()};
 addEventListener('resize',()=>{renderCards();draw()});
-ribbon();load();setInterval(load,60000);
+initConv();syncConv();ribbon();load();setInterval(load,60000);
 </script></body></html>
