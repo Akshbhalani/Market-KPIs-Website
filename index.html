@@ -21,7 +21,7 @@ h2{font-size:18px;margin:26px 0 2px}h3{font-size:12px;letter-spacing:.08em;text-
 .l{min-width:0}.n{font-size:14px;font-weight:600}.s{font-size:12px;color:var(--mu);margin-top:1px}
 .p{font-size:24px;font-weight:700;margin:8px 0 2px;font-variant-numeric:tabular-nums}.p2{font-size:17px;font-weight:700;margin-top:6px;font-variant-numeric:tabular-nums}
 .d{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}.up .d,.d.up{color:var(--up)}.dn .d,.d.dn{color:var(--dn)}.f{font-size:11px;color:var(--mu);margin-top:4px}
-.r{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex:none}.cvt{background:var(--card);border:2px solid var(--bd);border-radius:14px;padding:16px;margin-top:6px}.cr{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.cr input,.cr select{font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;min-width:0}.cr input{width:150px;flex:1 1 130px}.cr select{flex:1 1 150px}.cr button{border:1px solid var(--bd);background:var(--bg);color:var(--tx);border-radius:10px;width:42px;height:42px;font-size:18px;cursor:pointer}.res{font-size:30px;font-weight:700;margin:14px 0 2px;font-variant-numeric:tabular-nums}.ga{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.ga div{background:var(--bg);border-radius:10px;padding:8px 12px;font-size:13px;color:var(--mu)}.ga b{display:block;font-size:15px;color:var(--tx);font-variant-numeric:tabular-nums}.mk{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:1px}.mk.on{background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.2)}.mk.off{background:#ef4444}.dt{font-size:11px;color:var(--mu);white-space:nowrap}.sp{width:100px;height:56px;flex:none}
+.r{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex:none}.cvt{background:var(--card);border:2px solid var(--bd);border-radius:14px;padding:16px;margin-top:6px}.cr{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.cr input,.cr select{font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;min-width:0}.cr input{width:150px;flex:1 1 130px}.cr select{flex:1 1 150px}.cr button{border:1px solid var(--bd);background:var(--bg);color:var(--tx);border-radius:10px;width:42px;height:42px;font-size:18px;cursor:pointer}.res{font-size:30px;font-weight:700;margin:14px 0 2px;font-variant-numeric:tabular-nums}.ga{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.ga div{background:var(--bg);border-radius:10px;padding:8px 12px;font-size:13px;color:var(--mu)}.ga b{display:block;font-size:15px;color:var(--tx);font-variant-numeric:tabular-nums}.cf{display:none;gap:8px;flex-wrap:wrap;align-items:center;background:var(--card);border:2px solid var(--bd);border-radius:14px;padding:12px 14px;margin:6px 0}.cf label{font-size:13px;color:var(--mu);display:flex;align-items:center;gap:8px}.cf select,.cf input{font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:8px 10px;min-width:0}.cf button{border:1px solid var(--bd);background:transparent;color:var(--mu);padding:8px 14px;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer}.cf button.on{background:var(--tx);color:var(--bg);border-color:var(--tx)}.cf input{flex:1 1 150px}.ga2{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}.ga2 div{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:9px 12px;font-size:12px;color:var(--mu)}.ga2 b{display:block;font-size:14px;color:var(--tx);margin-top:2px;font-variant-numeric:tabular-nums}.mk{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:1px}.mk.on{background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.2)}.mk.off{background:#ef4444}.dt{font-size:11px;color:var(--mu);white-space:nowrap}.sp{width:100px;height:56px;flex:none}
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;justify-content:center;align-items:flex-start;overflow:auto;padding:calc(16px + env(safe-area-inset-top,0px)) 12px 16px;z-index:9}.ov.show{display:flex}
 .panel{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;width:100%;max-width:900px;position:relative}
 .x{position:absolute;top:12px;right:12px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);width:32px;height:32px;border-radius:50%;cursor:pointer}
@@ -38,9 +38,13 @@ h2{font-size:18px;margin:26px 0 2px}h3{font-size:12px;letter-spacing:.08em;text-
 <header><h1>Markets Dashboard</h1><div class="live" id="ts">Loading…</div></header>
 <div class="rb" id="rb"></div>
 <div class="note" id="note"><b>Loading live prices…</b></div>
+<div class="cf" id="cf" style="display:none"><label>Base currency <select id="fb" aria-label="Base currency"></select></label>
+<button id="fm" type="button">1 <span class="bc">INR</span> gets you MORE than 1 unit</button><button id="fl" type="button">1 <span class="bc">INR</span> gets you LESS than 1 unit</button>
+<input id="fs" type="search" placeholder="Search currency" aria-label="Search currency"></div>
+<div id="fxl"></div>
 <div class="cvt" id="conv" style="display:none"><h3 style="margin-top:0">Currency converter · live rates</h3>
 <div class="cr"><input id="amt" type="number" value="100" min="0" step="any" inputmode="decimal" aria-label="Amount"><select id="fr" aria-label="From"></select><button id="sw" title="Swap" aria-label="Swap">⇄</button><select id="to" aria-label="To"></select></div>
-<div class="res" id="res">—</div><div class="f" id="rt"></div><h3>Same amount in other currencies</h3><div class="ga" id="all"></div></div>
+<div class="res" id="res">—</div><div class="f" id="rt"></div><h3>Same amount in popular currencies</h3><div class="ga" id="all"></div><div class="f" style="margin-top:12px">Major currencies use live Yahoo Finance rates. All other currencies use daily rates: <a href="https://www.exchangerate-api.com" target="_blank" rel="noopener" style="color:inherit">Rates By Exchange Rate API</a>.</div></div>
 <div id="app"></div>
 </div>
 <div class="ov" id="ov"><div class="panel"><button class="x" id="x" aria-label="Close">✕</button>
@@ -119,20 +123,37 @@ function card(it){const m=model(it,'usd');
 function renderCards(){$('app').innerHTML=SEC.filter(g=>tab==='all'||g[0]===tab).map(g=>(tab==='all'?`<h2>${g[1]}</h2>`:'')+g[2].map(s=>`<h3>${s[0]}</h3><div class="g">${s[1].map(card).join('')}</div>`).join('')).join('');
  document.querySelectorAll('.sp').forEach(cv=>{const it=ITEMS[cv.dataset.id],m=model(it,'usd');if(m)spark(cv,m.sp,css(m.up?'--up':'--dn'))});
  document.querySelectorAll('.c:not(.off)').forEach(b=>b.onclick=()=>openP(b.dataset.id))}
-// ---- currency converter (rates cross through USD) ----
-const CUR=[['USD','US Dollar',null],['EUR','Euro',['EURUSD=X',0]],['GBP','British Pound',['GBPUSD=X',0]],['JPY','Japanese Yen',['JPY=X',1]],['INR','Indian Rupee',['INR=X',1]],['CNY','Chinese Yuan',['CNY=X',1]],['AUD','Australian Dollar',['AUDUSD=X',0]],['CAD','Canadian Dollar',['CAD=X',1]],['CHF','Swiss Franc',['CHF=X',1]],['AED','UAE Dirham',['AED=X',1]]];
-function usd(c){if(c==='USD')return 1;const d=CUR.find(x=>x[0]===c)[2],q=Q[d[0]];if(!q||!q.price)return null;return d[1]?1/q.price:q.price}
-const cf=v=>f(v,v<1?4:2);
+// ---- currency converter + filters. Rates cross through USD. Yahoo (live) for majors, daily ER rates for all others ----
+const POP=['USD','EUR','GBP','JPY','INR','CNY','AUD','CAD','CHF','AED'];
+const YF={EUR:['EURUSD=X',0],GBP:['GBPUSD=X',0],JPY:['JPY=X',1],INR:['INR=X',1],CNY:['CNY=X',1],AUD:['AUDUSD=X',0],CAD:['CAD=X',1],CHF:['CHF=X',1],AED:['AED=X',1]};
+let ER=null,fmode=null,DN=null;try{DN=new Intl.DisplayNames(['en'],{type:'currency'})}catch(e){}
+const nm=c=>{try{return DN?DN.of(c):c}catch(e){return c}};
+const live=c=>c==='USD'||(YF[c]&&Q[YF[c][0]]&&Q[YF[c][0]].price);
+function usd(c){if(c==='USD')return 1;const y=YF[c],q=y&&Q[y[0]];if(q&&q.price)return y[1]?1/q.price:q.price;if(ER&&ER[c])return 1/ER[c];return null}
+const codes=()=>ER?Object.keys(ER).sort():POP;
+const cf=v=>f(v,v<1?4:2),rf=v=>f(v,v<0.01?6:v<1?4:2);
 function conv(){const a=parseFloat($('amt').value)||0,F=$('fr').value,T=$('to').value,uf=usd(F),ut=usd(T);
  if(uf==null||ut==null){$('res').textContent='Waiting for rates…';$('rt').textContent='';$('all').innerHTML='';return}
- $('res').textContent=`${cf(a*uf/ut)} ${T}`;$('rt').textContent=`1 ${F} = ${f(uf/ut,4)} ${T} · live rate via Yahoo Finance, may be delayed ~15 min`;
- $('all').innerHTML=CUR.filter(c=>c[0]!==F).map(c=>`<div>${c[0]} · ${c[1]}<b>${cf(a*uf/usd(c[0]))}</b></div>`).join('')}
-function initConv(){const o=CUR.map(c=>`<option value="${c[0]}">${c[0]} · ${c[1]}</option>`).join('');$('fr').innerHTML=o;$('to').innerHTML=o;$('fr').value='USD';$('to').value='INR';
- ['amt','fr','to'].forEach(i=>$(i).oninput=conv);$('sw').onclick=()=>{const t=$('fr').value;$('fr').value=$('to').value;$('to').value=t;conv()}}
-function syncConv(){$('conv').style.display=tab==='fx'?'block':'none'}
+ $('res').textContent=`${cf(a*uf/ut)} ${T}`;
+ $('rt').textContent=`1 ${F} = ${rf(uf/ut)} ${T} · ${live(F)&&live(T)?'live rate via Yahoo Finance, may be delayed ~15 min':'daily rate (ExchangeRate-API)'}`;
+ $('all').innerHTML=POP.filter(c=>c!==F&&usd(c)).map(c=>`<div>${c} · ${nm(c)}<b>${cf(a*uf/usd(c))}</b></div>`).join('')}
+function fillSel(){const o=codes().map(c=>`<option value="${c}">${c} · ${nm(c)}</option>`).join('');
+ [['fr','USD'],['to','INR'],['fb','INR']].forEach(([i,d])=>{const e=$(i),v=e.value||d;e.innerHTML=o;e.value=codes().includes(v)?v:d})}
+function renderList(){const L=$('fxl'),B=$('fb').value||'INR';document.querySelectorAll('.bc').forEach(e=>e.textContent=B);
+ $('fm').classList.toggle('on',fmode==='more');$('fl').classList.toggle('on',fmode==='less');
+ if(!fmode){L.innerHTML='';return}
+ if(!ER){L.innerHTML='<div class="note" style="margin:8px 0">Loading all currencies…</div>';return}
+ const ub=usd(B),q=$('fs').value.trim().toLowerCase();
+ const rows=codes().filter(c=>c!==B).map(c=>[c,ub/usd(c)]).filter(([c,x])=>isFinite(x)&&(fmode==='more'?x>1:x<1)&&(!q||(c+' '+nm(c)).toLowerCase().includes(q))).sort((a,b)=>fmode==='more'?b[1]-a[1]:a[1]-b[1]);
+ L.innerHTML=`<h3>1 ${B} gets you ${fmode==='more'?'MORE':'LESS'} than 1 unit of these currencies · ${rows.length}</h3><div class="ga2">`+rows.map(([c,x])=>`<div>${c} · ${nm(c)}<b>1 ${B} = ${rf(x)} ${c}</b></div>`).join('')+'</div>'}
+async function loadRates(){try{const r=await fetch('/.netlify/functions/rates');if(!r.ok)throw 0;const j=await r.json();if(!j.rates)throw 0;ER=j.rates;fillSel();conv();renderList()}catch(e){}}
+function initConv(){fillSel();['amt','fr','to'].forEach(i=>$(i).oninput=conv);$('sw').onclick=()=>{const t=$('fr').value;$('fr').value=$('to').value;$('to').value=t;conv()};
+ $('fb').onchange=renderList;$('fs').oninput=renderList;
+ $('fm').onclick=()=>{fmode=fmode==='more'?null:'more';renderList()};$('fl').onclick=()=>{fmode=fmode==='less'?null:'less';renderList()}}
+function syncConv(){const on=tab==='fx';$('conv').style.display=on?'block':'none';$('cf').style.display=on?'flex':'none';$('fxl').style.display=on?'block':'none'}
 function ribbon(){$('rb').innerHTML=TABS.map(([k,l])=>`<button class="${k===tab?'on':''}" data-k="${k}">${l}</button>`).join('');
  document.querySelectorAll('#rb button').forEach(b=>b.onclick=()=>{tab=b.dataset.k;ribbon();renderCards();syncConv()})}
-async function load(){try{const r=await fetch('/.netlify/functions/quotes');if(!r.ok)throw 0;Q=await r.json();renderCards();conv();if(sel)head();
+async function load(){try{const r=await fetch('/.netlify/functions/quotes');if(!r.ok)throw 0;Q=await r.json();renderCards();conv();renderList();if(sel)head();
  $('ts').textContent='Updated '+new Date().toLocaleTimeString();
  $('note').innerHTML='<b>Live data</b> via Yahoo Finance, refreshed every 60 seconds. Prices can be delayed up to ~15 minutes. Oil, gold, silver and Dow Futures are futures prices. <span class="mk on" style="margin:0 4px 0 2px"></span>green dot = market open, <span class="mk off" style="margin:0 4px 0 2px"></span>red dot = closed (the card then shows the last trading day).  Not financial advice.'}
  catch(e){$('note').innerHTML='<b>Could not load prices.</b> Check that the Netlify functions are deployed. Retrying…'}}
@@ -165,5 +186,5 @@ function draw(){if(!sel)return;const it=ITEMS[sel],d=HC[it[3]+rng+cur],cv=$('cv'
   tp.style.display='block';tp.innerHTML=`<b>${sym(it,cur)}${f(P[i],dgt(it,P[i]))}</b><br>${t.toLocaleString([],{dateStyle:'medium',timeStyle:(rng==='1D'||rng==='5D'||rng==='15D')?'short':undefined})}`;tp.style.left=Math.min(X(i)+10,W-140)+'px';tp.style.top=Math.max(Y(P[i])-50,0)+'px'}}
 const cv=$('cv');cv.onmousemove=e=>{hov=e.offsetX;draw()};cv.onmouseleave=()=>{hov=null;draw()};cv.ontouchmove=e=>{hov=e.touches[0].clientX-cv.getBoundingClientRect().left;draw()};cv.ontouchend=()=>{hov=null;draw()};
 addEventListener('resize',()=>{renderCards();draw()});
-initConv();syncConv();ribbon();load();setInterval(load,60000);
+initConv();syncConv();ribbon();load();loadRates();setInterval(loadRates,3*36e5);setInterval(load,60000);
 </script></body></html>

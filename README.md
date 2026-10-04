@@ -1,4 +1,5 @@
 # Markets dashboard (live)
-Files: index.html (page) + netlify/functions/quotes.js (fetches prices).
-Deploy free: push this folder to GitHub -> netlify.com -> "Add new site" -> Import from Git -> Deploy (no build command, publish dir = .).
-Data: Yahoo Finance's unofficial public endpoint (no key). It can change or rate-limit without notice; for a commercial site use a licensed provider and edit quotes.js only.
+index.html = page. netlify/functions/quotes.js = live prices. netlify/functions/history.js = chart history.
+Deploy: push to GitHub, import into Netlify (no build command). Data: Yahoo Finance unofficial endpoints (may be delayed ~15 min, can change without notice).
+
+rates.js = daily rates for all ~160 currencies (open.er-api.com). For a public site, get a free key at exchangerate-api.com and set EXCHANGERATE_API_KEY in Netlify (Site settings > Environment variables).
